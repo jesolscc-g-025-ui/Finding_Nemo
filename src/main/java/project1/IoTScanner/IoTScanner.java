@@ -8,26 +8,41 @@ import java.util.*;
 public class IoTScanner {
 
     private static final Map<Integer,String> ports = new LinkedHashMap<>();
+    private  PortChecker portChecker;
 
+    public IoTScanner(PortChecker portChecker){
+        this.portChecker = portChecker;
+        addPorts();
+    }
 
     public static void main(String[] args) {
         if (args.length != 1){
             System.out.println("Example: IotScanner <Device-ip>");
         return;
         }
-        addPorts();
-        scan(args[0]);
+
+        //Create a portChecker that establishes actual Network Connections
+
+        PortChecker portChecker1 = new SocketPortChecker();
+        IoTScanner scanner = new IoTScanner(portChecker1);
+
+        Map<Integer,String>results = scanner.scan(args[0]);
+
+        System.out.println("Scanning: " + args[0]);
+        System.out.println("-------------------------");
+
+        results.forEach((port, service) ->
+                System.out.println(
+                        "OPEN: " + port + " - " + service
+                )
+        );
+
+        System.out.println(
+                "Total open ports: " + results.size()
+        );
+
     }
 
-    public static boolean isPortOpen(String host,int port){
-
-        try(Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host,port),500);
-        } catch (IOException e) {
-            return false;}
-        return true;
-
-    }
 
     public static void addPorts() {
         // general TCP ports you would commonly find on IoT devices
@@ -58,18 +73,18 @@ public class IoTScanner {
         return Collections.unmodifiableMap(ports);
     }
 
-    public static void scan(String host){
+    public Map<Integer,String> scan(String host){
 
-        System.out.println("SCANNING: " + host);
-        System.out.println("--------------------------------");
-        for (Map.Entry<Integer,String>enter: ports.entrySet()){
+        Map<Integer,String>openPorts = new LinkedHashMap<>();
+
+        for (Map.Entry<Integer,String>enter: availablePorts().entrySet()){
             int port = enter.getKey();
             String service = enter.getValue();
-            if (isPortOpen(host,port)){
-                System.out.println("Open Port: " + port + "- Service: " + service);
+            if (portChecker.isOpen(host,port)){
+                openPorts.put(port,service);
             }
             }
-        System.out.println(".Scan Complete.");
-        }
+        return Collections.unmodifiableMap(openPorts);
+    }
     }
 

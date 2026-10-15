@@ -91,29 +91,21 @@ public class IoTScannerTest {
     //Testing recognition of An Open Local Port
 
     @Test
-    void TestingRecognitionOfOpenLocalPort() throws Exception {
+    void portScannerShouldReturnOnlyOpenPorts(){
+        // Simulate a Testcase Without Establishing Real-Life Connections
 
-        try(ServerSocket server = new ServerSocket(0)) {
-            int port = server.getLocalPort();
-            assertTrue(IoTScanner.isPortOpen("localhost",port));
+        PortChecker TestChecker = (host, port) ->
+            port == 22 || port == 1883;
 
-        }
-    }
-    @Test
-    void TestingRecognitionOfClosedPort(){
-        int unusedPort;
+        IoTScanner tScanner = new IoTScanner(TestChecker);
 
-        try (ServerSocket server =
-                     new ServerSocket(0)) {
-            unusedPort = server.getLocalPort();
-        } catch (Exception e) {
-            fail("Could not prepare test port", e);
-            return;
-        }
+        //results
+        Map<Integer,String>results = tScanner.scan("192.168.5.27");
 
-        assertFalse(
-                IoTScanner.isPortOpen("localhost", unusedPort)
-        );
+        assertEquals(2,results.size());
+        assertTrue(results.containsKey(22));
+        assertTrue(results.containsKey(1883));
+
     }
     @Test
     void TestingUnmodifiableListShouldNotBeChangeable(){
