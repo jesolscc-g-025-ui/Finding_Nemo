@@ -64,5 +64,24 @@ public class IoTScannerTest {
         assertFalse(scanner1.isPortOpen("localhost",22));
         assertFalse(scanner1.isPortOpen("localhost",455));
     }
+    @Test
 
+    void TestIoTServiceIdentificationCorrelationWithPort(){
+        Map<Integer,String>ports = scanner.availablePorts();
+
+        assertEquals("TCP - SSH-Secure Shell (Remote login / CLI)",ports.get(22));
+        assertEquals("TCP - FTP-Data(File transfer protocol)",ports.get(20));
+        assertEquals("TCP - FTP-Control",ports.get(21));
+        assertEquals("TCP - HTTP-Unencrypted Web Traffic",ports.get(80));
+        assertEquals("TCP - HTTPS-Secure Web Management",ports.get(443));
+        assertEquals("TCP - RTSP-Real Time Streaming Protocol(IP cameras and video Stream retrieval",ports.get(554));
+        assertEquals("TCP - RDP-Remote Desktop Protocol(graphical remote control",ports.get(3389));
+
+        assertEquals("TCP - MQTT(Message Queuing Telemetry Transport)",ports.get(1883));
+        assertEquals("TCP - MQTTS(MQTT over SSL/TLS)encrypting IoT messaging",ports.get(8883));
+        assertEquals("TCP - Chromecast(Google home local discovery and control services",ports.get(8008));
+        assertEquals("TCP - AMQP(Advanced Message Queuing Protocol",ports.get(5672));
+        assertEquals("TCP - Industrial Automation,PLCs,and smart Sensors",ports.get(502));
+        assertEquals("TCP - DNP3(Distributed Network Protocol)",ports.get(20000));
+    }
 }

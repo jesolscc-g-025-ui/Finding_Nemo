@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------------
+Test set: project1.MacVendorLookup.MacVendorLookUpTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.014 s <<< FAILURE! -- in project1.MacVendorLookup.MacVendorLookUpTest
+project1.MacVendorLookup.MacVendorLookUpTest -- Time elapsed: 0.014 s <<< ERROR!
+java.lang.NoClassDefFoundError: project1/MacVendorLookup/MacManufacturerLookUp
+	at java.base/java.lang.Class.getDeclaredFields0(Native Method)
+	at java.base/java.lang.Class.privateGetDeclaredFields(Class.java:2918)
+	at java.base/java.lang.Class.getDeclaredFields(Class.java:2248)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1612)
+Caused by: java.lang.ClassNotFoundException: project1.MacVendorLookup.MacManufacturerLookUp
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:580)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:502)
+	... 4 more
+
