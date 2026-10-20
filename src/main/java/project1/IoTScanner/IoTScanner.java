@@ -1,5 +1,8 @@
 package project1.IoTScanner;
 
+import project1.MacDiscovery.MacDiscovery;
+import project1.MacManufacturerLookup.MacManufacturerLookUp;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -23,16 +26,44 @@ public class IoTScanner {
             System.out.println("Example: IotScanner <Device-ip>");
         return;
         }
+        String ipAddress = args[0];
+        try {
+            // First Discover the Mac Address of IpAddress
+            MacDiscovery discovery = new MacDiscovery();
+            Optional<String>mac = discovery.discover(ipAddress);
 
-        //Create a portChecker that Attempts an actual Network Connections
-        //              |        |       |
-        //              v        v       v
-        IoTScanner scanner = new IoTScanner();
-        List<PortScanResult>results = scanner.scan(args[0]);
+            // Second Load The manufacturer Registry
+            MacManufacturerLookUp lookUp = new MacManufacturerLookUp();
+            lookUp.loadRegistry();
 
-        ScanReport report = new ScanReport();
-        String FullReport = report.generateReport(args[0],results);
-        System.out.println(FullReport);
+            //Third Identify Manufacturer from registry
+            String manufacturer = "Unknown manufacturer";
+
+            if (mac.isPresent()){
+                manufacturer = lookUp.lookupManufacturer(mac.get());
+            }
+            //Device Information
+            System.out.println("======== Device Info =====\n");
+            System.out.println("IP: " + ipAddress+"\n");
+            System.out.println("MAC: "+ mac.orElse("mac not found")+"\n");
+            System.out.println("Manufacturer: " + manufacturer);
+            System.out.println("--------------------------------");
+
+            //Create a portChecker that Attempts an actual Network Connections
+            //              |        |       |
+            //              v        v       v
+            IoTScanner scanner = new IoTScanner();
+            List<PortScanResult> results = scanner.scan(args[0]);
+
+            ScanReport report = new ScanReport();
+            String FullReport = report.generateReport(args[0], results);
+            System.out.println(FullReport);
+        } catch (IOException e) {
+            System.err.println("I/O Error " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("MAC Discovery Was Interrupted");
+        }
     }
 
 

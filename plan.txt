@@ -32,3 +32,4 @@ This implementation is Windows-specific; Linux uses different command options.
 If a MAC address cannot be discovered, don't label the manufacturer as confirmed. Report it as unavailable instead.
 
 Test your parsing and manufacturer lookup separately from the real network discovery, so your unit tests don't depend on a live device.
+
