@@ -1,7 +1,5 @@
 package project1.IoTScanner;
 
-import project1.IoTScanner.ScanResult.PortScanResult;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -27,15 +25,14 @@ public class IoTScanner {
         }
 
         //Create a portChecker that Attempts an actual Network Connections
-
+        //              |        |       |
+        //              v        v       v
         IoTScanner scanner = new IoTScanner();
         List<PortScanResult>results = scanner.scan(args[0]);
 
-        System.out.println("Scanning: " + args[0]);
-        System.out.println("-------------------------");
-
-        System.out.println("Total open Ports: " + results.size());
-
+        ScanReport report = new ScanReport();
+        String FullReport = report.generateReport(args[0],results);
+        System.out.println(FullReport);
     }
 
 
@@ -72,8 +69,7 @@ public class IoTScanner {
 
         List<PortScanResult>results = new ArrayList<>();
 
-        System.out.println("Scanning:" + host);
-        System.out.println("=========================");
+
         for (Map.Entry<Integer,String>enter: availablePorts().entrySet()){
 
             int port = enter.getKey();
@@ -82,9 +78,10 @@ public class IoTScanner {
             if (isPortOpen(host,port)){
                 PortScanResult ScanResult = new PortScanResult(host,port,service);
                 results.add(ScanResult);
+                System.out.println(ScanResult);
             }
             }
-        System.out.println("Scan Complete");
+
         return results;
     }
     private static boolean checkTcpConnection(String host,int port){

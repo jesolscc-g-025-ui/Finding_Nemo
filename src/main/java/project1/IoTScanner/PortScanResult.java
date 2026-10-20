@@ -1,4 +1,4 @@
-package project1.IoTScanner.ScanResult;
+package project1.IoTScanner;
 
 public class PortScanResult {
     private final String Host;

@@ -11,8 +11,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IoTScannerTest {
-    private final IoTScanner scanner = new IoTScanner();
 
+    private final IoTScanner scanner = new IoTScanner();
 
     @Test
     void TestAddPorts(){ // Test if addPorts() works successfully
