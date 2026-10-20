@@ -1,5 +1,7 @@
 package project1.IoTScanner;
 
+import project1.IoTScanner.ScanResult.PortScanResult;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -8,43 +10,36 @@ import java.util.*;
 public class IoTScanner {
 
     private static final Map<Integer,String> ports = new LinkedHashMap<>();
-    private  PortChecker portChecker;
-
+    private final PortChecker portChecker;
+    //Constructor for actual tcpConnection
+    public IoTScanner(){
+        this.portChecker = IoTScanner::checkTcpConnection;
+        addPorts();
+    }
     public IoTScanner(PortChecker portChecker){
         this.portChecker = portChecker;
         addPorts();
     }
-
     public static void main(String[] args) {
         if (args.length != 1){
             System.out.println("Example: IotScanner <Device-ip>");
         return;
         }
 
-        //Create a portChecker that establishes actual Network Connections
+        //Create a portChecker that Attempts an actual Network Connections
 
-        PortChecker portChecker1 = new SocketPortChecker();
-        IoTScanner scanner = new IoTScanner(portChecker1);
-
-        Map<Integer,String>results = scanner.scan(args[0]);
+        IoTScanner scanner = new IoTScanner();
+        List<PortScanResult>results = scanner.scan(args[0]);
 
         System.out.println("Scanning: " + args[0]);
         System.out.println("-------------------------");
 
-        results.forEach((port, service) ->
-                System.out.println(
-                        "OPEN: " + port + " - " + service
-                )
-        );
-
-        System.out.println(
-                "Total open ports: " + results.size()
-        );
+        System.out.println("Total open Ports: " + results.size());
 
     }
 
 
-    public static void addPorts() {
+    public void addPorts() {
         // general TCP ports you would commonly find on IoT devices
 
         ports.put(20,"TCP - FTP-Data(File transfer protocol)");
@@ -73,18 +68,34 @@ public class IoTScanner {
         return Collections.unmodifiableMap(ports);
     }
 
-    public Map<Integer,String> scan(String host){
+    public List<PortScanResult>scan(String host){
 
-        Map<Integer,String>openPorts = new LinkedHashMap<>();
+        List<PortScanResult>results = new ArrayList<>();
 
+        System.out.println("Scanning:" + host);
+        System.out.println("=========================");
         for (Map.Entry<Integer,String>enter: availablePorts().entrySet()){
+
             int port = enter.getKey();
             String service = enter.getValue();
-            if (portChecker.isOpen(host,port)){
-                openPorts.put(port,service);
+
+            if (isPortOpen(host,port)){
+                PortScanResult ScanResult = new PortScanResult(host,port,service);
+                results.add(ScanResult);
             }
             }
-        return Collections.unmodifiableMap(openPorts);
+        System.out.println("Scan Complete");
+        return results;
     }
+    private static boolean checkTcpConnection(String host,int port){
+        try(Socket socket = new Socket()){
+            socket.connect(new InetSocketAddress(host,port),500);
+        }catch (IOException e){
+            return false;
+        }return true;
+    }
+public boolean isPortOpen(String host,int port){
+        return portChecker.isOpen(host, port);
+}
     }
 

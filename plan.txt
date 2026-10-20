@@ -1,0 +1,18 @@
+Building Stages
+---------------
+
+1.Scan common IoT TCP ports.
+
+2.Identify likely services such as MQTT and Telnet.
+
+3.Map MAC addresses to manufacturers using a local IEEE registry.
+
+4.Audit default-credential security on devices you own or are authorized to test.
+
+5.Generate a security report.
+
+SEPARATION OF CONCERNS
+------------------------------------------------------------------------------------------------------------------------
+             |RESPONSIBILITY|
+             ----------------
+- IoTScanner |   SCANNING   |
