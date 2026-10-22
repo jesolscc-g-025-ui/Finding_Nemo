@@ -33,3 +33,59 @@ If a MAC address cannot be discovered, don't label the manufacturer as confirmed
 
 Test your parsing and manufacturer lookup separately from the real network discovery, so your unit tests don't depend on a live device.
 
+For offline Devices The Scanner Uses The CSV database to search for the MAC address.
+Online Devices Uses the API to search for the MACAddress. API returns a JSON response which gets deserielized into a String object
+and will be added the Scan Report
+
+------------------------------------------------------------------------------------------------------------------------
+TESTING PLANNING
+================
+
+UNIT TESTS
+----------
+IoTScannerTest: 1.Test AddPorts()
+                2.Test AvailablePorts UnmodifiableList
+                3.Test isPortOpen() for Open and Closed Ports
+                4.Test Scan logic Without a Real TCP connection
+                5.Test IoTServiceIdentification Matches Port Number.
+
+ScanResultTest: 1.Test Scan Result Successful without TCP Connection with open Ports.
+                2.Test Scanning Results Empty if no ports found Open
+                3.Test Scan result getters return the Correct Values
+
+ScanReportTest: 1.Test Successful Report Generator.
+                2.Test Scan report Contains Services Matching Open Ports
+                3.Test Empty Report Generation For no Open Ports
+
+MACManufacturerTest: 1.Test LoadRegistry Using the local Test CSV database
+                     2.Test MA-M manufacturers using local Test CSV database.
+                     3.Test MA-S manufacturers using local Test CSV database.
+                     4.Test MA-M manufacturers using local Test CSV database.
+                     5.Test MACAddress Format-with hyphens
+                     6.Test MACAddress Format.With Dots
+                     7.Test MACAddress Format with lowercase
+                     8.Test Unknown Manufacturer
+                     9.Test Exception for Invalid MacAddress
+                     10.Test Reject MAC with Invalid Characters.
+                     11.Test Reject Null MAC Address
+                     12.Test Most Specific Matching Prefix(9 before 6,7)
+
+MACDiscoveryTest:(TESTING PARSING LOGIC)= 1.
+
+HybridManufacturerTest: 1.
+
+==============================================================
+
+INTEGRATION TESTING
+-------------------
+
+MACDiscovery Test: 1.Test Establish A connection Using HTTPClient
+                   2.Test Create A Test MacAdress
+                   3.Test Check whether The HTTP Request was successful
+                   4.Test Check Error Handling
+                   5.Test Invalid MacAddress
+                   6.Test Null MACAddress
+                   7.Test Successful Status Code
+                   8.Test JSON Array Parsing
+                   9.Test JSON Components
+                   10.Test The Final Extracted String

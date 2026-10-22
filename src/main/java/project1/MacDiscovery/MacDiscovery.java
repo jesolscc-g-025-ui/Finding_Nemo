@@ -1,6 +1,7 @@
 package project1.MacDiscovery;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -32,14 +33,28 @@ public class MacDiscovery {
                 //Convert the InputStream data to String output in Java through the Scanner
             }
             //Using the Data,Search for MacAddress
-            Matcher matcher = MacAddressPat.matcher(output);
-            if (matcher.find()){
-                //return the whole macAdress
-                return Optional.of(matcher.group().replace("-",":").toUpperCase());
-            }
-            return Optional.empty();
+            return parseMACAddress(output);
+
         }finally {
             arP.destroyForcibly();
         }
+    }
+
+    //Method For Parsing Logic Without running windows operating Commands
+    static Optional<String>parseMACAddress(String arpOutput){
+
+        if (arpOutput == null || arpOutput.isBlank()){
+            return Optional.empty();
+        }
+        //The pattern to match for MACAddress
+        Pattern pattern = Pattern.compile("(?i)([0-9a-f]{2}-){5}[0-9a-f]{2}");
+
+        Matcher match = pattern.matcher(arpOutput);
+
+        if (match.find()){
+            String macAddress = match.group(0).replace("-",":").toUpperCase(Locale.ROOT);
+            return Optional.of(macAddress);
+        }
+        return Optional.empty();
     }
 }
