@@ -70,8 +70,17 @@ MACManufacturerTest: 1.Test LoadRegistry Using the local Test CSV database
                      11.Test Reject Null MAC Address
                      12.Test Most Specific Matching Prefix(9 before 6,7)
 
-MACDiscoveryTest:(TESTING PARSING LOGIC)= 1.
+MACDiscoveryTest:(TESTING PARSING LOGIC) = 1.Test ARP String output MACAddress successfully found
+                                           2.Test ARP String output Conversion to uppercase
+                                           3.Test ARP String output Result Empty if MACAddress not found
+                                           4.Test ARP String output result Empty if MACAddress is empty
+                                           5.Test ARP String output result empty if MACAddress is null
 
+                (TEST DISCOVERY LOGIC) = 1.TEST Should Discover MacAddress
+                                         2.Test should Run Ping before Arp
+                                         3.Test should return empty when ARP has no MAC ADDRESS
+                                         4.Test Should propagate command failure
+                                         5.Test Should Return empty when ARP output is empty.
 HybridManufacturerTest: 1.
 
 ==============================================================

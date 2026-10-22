@@ -63,6 +63,8 @@ public class IoTScanner {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("MAC Discovery Was Interrupted");
+        } catch (Exception e) {
+            throw new RuntimeException("unsupported Command From Mac Discovery");
         }
     }
 

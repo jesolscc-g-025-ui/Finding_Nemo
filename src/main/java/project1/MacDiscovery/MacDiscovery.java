@@ -1,6 +1,9 @@
 package project1.MacDiscovery;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Scanner;
@@ -9,35 +12,35 @@ import java.util.regex.Pattern;
 
 public class MacDiscovery {
 
-    private static final Pattern MacAddressPat= Pattern.compile("(?i)([0-9A-F]{2}-){5}[0-9A-F]{2}");
+    //The pattern to match for MACAddress
+    private static final Pattern pattern = Pattern.compile("(?i)([0-9a-f]{2}-){5}[0-9a-f]{2}");
 
-    public Optional<String>discover(String ipAddress)throws IOException,InterruptedException{
+    private final CommandRunner commandRunner;
 
-        //First We gonna ping the IpAddress with a ProcessBuilder
-        Process ping = new ProcessBuilder("ping","-n","1","-w","1000",ipAddress).redirectErrorStream(true).start();
+    //Used For Running Actual System Commands
+    public MacDiscovery(){
+        this(MacDiscovery::runSystemCommand);
+    }
+    //Used by Unit Tests
+    public MacDiscovery(CommandRunner commandRunner){
+        this.commandRunner = commandRunner;
+    }
+    public Optional<String>discover(String ipAddress) throws Exception,InterruptedException {
 
-        try{
-            ping.waitFor(); // wait for the ping process to finish
-        }finally {
-            ping.destroy(); // terminate pinging process
+
+        //First try to load the ARP cache with the actual ping,which means the target device accepts ping
+        try {
+            commandRunner.run(List.of("ping", "-n", "1", "-w", "1000", ipAddress));
+        } catch (IOException e) {
+        //continue even if ping failed for ping-disabled devices
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
         }
-        // Windows Specific Command
-        Process arP = new ProcessBuilder("arp","-a", ipAddress).redirectErrorStream(true).start();
+        //Then query the ARP cache for the target Ip Address
+        String ARPOutput = commandRunner.run(List.of("arp","-a",ipAddress));
 
-        try{
-            String output; // the output from the arp
-
-            try(Scanner scanner = new Scanner(arP.getInputStream())){
-                output = scanner.useDelimiter("\\A").hasNext()? scanner.next() : "";
-                //takes the output and use it as input for java to read
-                //Convert the InputStream data to String output in Java through the Scanner
-            }
-            //Using the Data,Search for MacAddress
-            return parseMACAddress(output);
-
-        }finally {
-            arP.destroyForcibly();
-        }
+        return parseMACAddress(ARPOutput);
     }
 
     //Method For Parsing Logic Without running windows operating Commands
@@ -46,8 +49,7 @@ public class MacDiscovery {
         if (arpOutput == null || arpOutput.isBlank()){
             return Optional.empty();
         }
-        //The pattern to match for MACAddress
-        Pattern pattern = Pattern.compile("(?i)([0-9a-f]{2}-){5}[0-9a-f]{2}");
+
 
         Matcher match = pattern.matcher(arpOutput);
 
@@ -57,4 +59,20 @@ public class MacDiscovery {
         }
         return Optional.empty();
     }
-}
+    private static String runSystemCommand(List<String>command)throws IOException,InterruptedException{
+
+        Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
+        try(Scanner scanner = new Scanner(process.getInputStream(),StandardCharsets.UTF_8)){
+
+            scanner.useDelimiter("\\A");
+            String output = scanner.hasNext() ?scanner.next() :"";
+
+            int exitCode= process.waitFor();
+            if (exitCode != 0){
+                throw new IOException("Command Failed With Exit Code" + exitCode + " : " + command);
+            }
+            return output;
+        }
+        }
+    }
+
