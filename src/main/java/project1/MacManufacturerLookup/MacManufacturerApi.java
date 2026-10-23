@@ -12,8 +12,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 public class MacManufacturerApi {
-    private static final String API_URL =
-            "https://api.macaddresslookup.app/api/v2/"; // BaseAddress of the API
+
+    private static final String API_URL =  "https://api.macaddresslookup.app/api/v2/"; // BaseAddress of the API
 
     //Create A HttpClient to connect to the remote server of the API
 
