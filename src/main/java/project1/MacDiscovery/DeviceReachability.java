@@ -7,7 +7,7 @@ public class DeviceReachability {
     private final CommandRunner commandRunner;
 
     public DeviceReachability(){
-        this(MacDiscovery::run)
+        this(IoTScanner::runSystemCommand);
     }
 
     //Use to test the logic in test

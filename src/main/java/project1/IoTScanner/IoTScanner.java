@@ -129,7 +129,7 @@ public boolean isPortOpen(String host,int port){
         return portChecker.isOpen(host, port);
 }
 
-public String runSystemCommand(List<String>commands)throws IOException,Exception{
+public static String runSystemCommand(List<String>commands)throws IOException,Exception{
     Process process = new ProcessBuilder(commands).redirectErrorStream(true).start();
     try(Scanner scanner = new Scanner(process.getInputStream(), StandardCharsets.UTF_8)){
 
