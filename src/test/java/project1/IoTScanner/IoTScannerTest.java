@@ -84,4 +84,6 @@ public class IoTScannerTest {
         assertEquals("TCP - Industrial Automation,PLCs,and smart Sensors",ports.get(502));
         assertEquals("TCP - DNP3(Distributed Network Protocol)",ports.get(20000));
     }
+
+
 }

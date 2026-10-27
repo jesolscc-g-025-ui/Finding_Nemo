@@ -1,6 +1,5 @@
 package project1.IoTScanner;
 
-import de.martinspielmnann.nmapxmlparser.elements.Address;
 import project1.MacDiscovery.MacDiscovery;
 import project1.MacManufacturerLookup.MacManufacturerApi;
 import project1.MacManufacturerLookup.MacManufacturerLookUp;
@@ -30,6 +29,7 @@ public class IoTScanner {
         return;
         }
         String ipAddress = args[0];
+
         try {
             // First Discover the Mac Address of IpAddress
             MacDiscovery discovery = new MacDiscovery();
@@ -37,19 +37,8 @@ public class IoTScanner {
 
 
             //Secondly Check if the device is online and try to use the API lookup
+            String manufacturer = IoTScanner.findManufacturer(ipAddress);
 
-
-            // third Load The manufacturer Registry from the Local CSV and search.
-
-            MacManufacturerLookUp lookUp = new MacManufacturerLookUp();
-            lookUp.loadRegistry();
-
-            //Third Identify Manufacturer from registry
-            String manufacturer = "Unknown manufacturer";
-
-            if (mac.isPresent()){
-                manufacturer = lookUp.lookupManufacturer(mac.get());
-            }
             //Device Information
             System.out.println("======== Device Info =====\n");
             System.out.println("IP: " + ipAddress+"\n");
@@ -139,24 +128,39 @@ public boolean isPortOpen(String host,int port){
         return portChecker.isOpen(host, port);
 }
 
-public String findManufacturer(String Ip_Address)throws Exception{
-    MacManufacturerApi api = new MacManufacturerApi();
-    MacManufacturerLookUp lookup = new MacManufacturerLookUp();
-        try {
-            return api.lookupManufacturer(Ip_Address);
-        }catch (Exception e){
-            System.err.println("API unavailable");
+private static String findManufacturer(String Ip_Address)throws Exception{
+
+        MacManufacturerApi api = new MacManufacturerApi();
+        MacManufacturerLookUp lookup = new MacManufacturerLookUp();
+        boolean isReachable = new DeviceReachability().isReachAble(Ip_Address);
+        MacDiscovery MACDiscovery = new MacDiscovery();
+        Optional<String> MACResult = MACDiscovery.discover(Ip_Address);
+
+        if (MACResult.isEmpty()){
+            return "unknown Manufacturer";
+        }
+        if (isReachable) {
+            try {
+                String manufacturer = api.lookupManufacturer(Ip_Address);
+
+                if (manufacturer != null && !manufacturer.isEmpty() && !manufacturer.equalsIgnoreCase("unknown Manufacturer")) {
+                    return manufacturer;
+                }
+            } catch (Exception e) {
+                System.err.println("API unavailable");
+
+            }
         }
         return lookup.lookupManufacturer(Ip_Address);
 }
-    private static String RunSystemCommand(List<String>command)throws IOException,InterruptedException{
+    public static String RunSystemCommand(List<String>command)throws IOException,InterruptedException{
         Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         try(Scanner scanner = new Scanner(process.getInputStream(), StandardCharsets.UTF_8)){
 
             scanner.useDelimiter("\\A");
             String output = scanner.hasNext() ?scanner.next() :"";
 
-            int exitCode= process.waitFor();
+            int exitCode = process.waitFor();
             if (exitCode != 0){
                 throw new IOException("Command Failed With Exit Code" + exitCode + " : " + command);
             }
