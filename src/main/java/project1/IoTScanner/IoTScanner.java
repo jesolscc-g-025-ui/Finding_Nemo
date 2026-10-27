@@ -1,6 +1,8 @@
 package project1.IoTScanner;
 
+import de.martinspielmnann.nmapxmlparser.elements.Address;
 import project1.MacDiscovery.MacDiscovery;
+import project1.MacManufacturerLookup.MacManufacturerApi;
 import project1.MacManufacturerLookup.MacManufacturerLookUp;
 
 import java.io.IOException;
@@ -33,7 +35,12 @@ public class IoTScanner {
             MacDiscovery discovery = new MacDiscovery();
             Optional<String>mac = discovery.discover(ipAddress);
 
-            // Second Load The manufacturer Registry
+
+            //Secondly Check if the device is online and try to use the API lookup
+
+
+            // third Load The manufacturer Registry from the Local CSV and search.
+
             MacManufacturerLookUp lookUp = new MacManufacturerLookUp();
             lookUp.loadRegistry();
 
@@ -59,11 +66,14 @@ public class IoTScanner {
             ScanReport report = new ScanReport();
             String FullReport = report.generateReport(args[0], results);
             System.out.println(FullReport);
+
         } catch (IOException e) {
             System.err.println("I/O Error " + e.getMessage());
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("MAC Discovery Was Interrupted");
+
         } catch (Exception e) {
             throw new RuntimeException("unsupported Command From Mac Discovery");
         }
@@ -129,19 +139,29 @@ public boolean isPortOpen(String host,int port){
         return portChecker.isOpen(host, port);
 }
 
-public static String runSystemCommand(List<String>commands)throws IOException,Exception{
-    Process process = new ProcessBuilder(commands).redirectErrorStream(true).start();
-    try(Scanner scanner = new Scanner(process.getInputStream(), StandardCharsets.UTF_8)){
-
-        scanner.useDelimiter("\\A");
-        String output = scanner.hasNext() ?scanner.next() :"";
-
-        int exitCode= process.waitFor();
-        if (exitCode != 0){
-            throw new IOException("Command Failed With Exit Code" + exitCode + " : " + commands);
+public String findManufacturer(String Ip_Address)throws Exception{
+    MacManufacturerApi api = new MacManufacturerApi();
+    MacManufacturerLookUp lookup = new MacManufacturerLookUp();
+        try {
+            return api.lookupManufacturer(Ip_Address);
+        }catch (Exception e){
+            System.err.println("API unavailable");
         }
-        return output; }
+        return lookup.lookupManufacturer(Ip_Address);
 }
-}
+    private static String RunSystemCommand(List<String>command)throws IOException,InterruptedException{
+        Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
+        try(Scanner scanner = new Scanner(process.getInputStream(), StandardCharsets.UTF_8)){
 
+            scanner.useDelimiter("\\A");
+            String output = scanner.hasNext() ?scanner.next() :"";
+
+            int exitCode= process.waitFor();
+            if (exitCode != 0){
+                throw new IOException("Command Failed With Exit Code" + exitCode + " : " + command);
+            }
+            return output;
+        }
+    }
+    }
 

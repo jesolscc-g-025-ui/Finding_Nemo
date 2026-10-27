@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 project1\IoTScanner\IoTScannerTest.class
 project1\MacManufacturerLookup\TestManufacturerApi.class
 project1\MacDiscovery\TestMACDiscovery.class
 project1\IoTScanner\ScanResultTest.class
 project1\MacManufacturerLookup\TestMacManufacturerLookUp.class
 project1\IoTScanner\ScanReportTest.class
+=======
+>>>>>>> d77ff2f0fe74bcb4972b2eb9cda62522cde7530b

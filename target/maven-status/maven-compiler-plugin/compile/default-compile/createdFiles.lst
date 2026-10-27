@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 project1\IoTScanner\PortScanResult.class
 project1\IoTScanner\ScanReport.class
 project1\MacDiscovery\MacDiscovery.class
@@ -6,3 +7,6 @@ project1\MacManufacturerLookup\MacManufacturerApi.class
 project1\MacManufacturerLookup\MacManufacturerLookUp.class
 project1\IoTScanner\PortChecker.class
 project1\MacDiscovery\CommandRunner.class
+=======
+project1/IoTScanner/DeviceReachability.class
+>>>>>>> d77ff2f0fe74bcb4972b2eb9cda62522cde7530b

@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: project1.MacDiscovery.TestMACDiscovery
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.486 s -- in project1.MacDiscovery.TestMACDiscovery
+=======
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+>>>>>>> d77ff2f0fe74bcb4972b2eb9cda62522cde7530b

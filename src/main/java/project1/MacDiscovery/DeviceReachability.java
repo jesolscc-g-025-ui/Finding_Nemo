@@ -7,7 +7,7 @@ public class DeviceReachability {
     private final CommandRunner commandRunner;
 
     public DeviceReachability(){
-        this(IoTScanner::runSystemCommand);
+        this(IoTScanner::RunSystemCommand);
     }
 
     //Use to test the logic in test

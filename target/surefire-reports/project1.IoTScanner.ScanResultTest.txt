@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: project1.IoTScanner.ScanResultTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.245 s -- in project1.IoTScanner.ScanResultTest
+=======
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+>>>>>>> d77ff2f0fe74bcb4972b2eb9cda62522cde7530b
