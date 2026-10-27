@@ -6,6 +6,7 @@ import project1.MacManufacturerLookup.MacManufacturerLookUp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class IoTScanner {
@@ -127,5 +128,20 @@ public class IoTScanner {
 public boolean isPortOpen(String host,int port){
         return portChecker.isOpen(host, port);
 }
-    }
+
+public String runSystemCommand(List<String>commands)throws IOException,Exception{
+    Process process = new ProcessBuilder(commands).redirectErrorStream(true).start();
+    try(Scanner scanner = new Scanner(process.getInputStream(), StandardCharsets.UTF_8)){
+
+        scanner.useDelimiter("\\A");
+        String output = scanner.hasNext() ?scanner.next() :"";
+
+        int exitCode= process.waitFor();
+        if (exitCode != 0){
+            throw new IOException("Command Failed With Exit Code" + exitCode + " : " + commands);
+        }
+        return output; }
+}
+}
+
 

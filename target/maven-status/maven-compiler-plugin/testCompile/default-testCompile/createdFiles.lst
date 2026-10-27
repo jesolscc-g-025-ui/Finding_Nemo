@@ -1,2 +1,6 @@
+project1\IoTScanner\IoTScannerTest.class
+project1\MacManufacturerLookup\TestManufacturerApi.class
+project1\MacDiscovery\TestMACDiscovery.class
 project1\IoTScanner\ScanResultTest.class
 project1\MacManufacturerLookup\TestMacManufacturerLookUp.class
+project1\IoTScanner\ScanReportTest.class
