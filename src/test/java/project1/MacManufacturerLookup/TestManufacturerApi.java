@@ -8,20 +8,25 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.ClientInfoStatus;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestManufacturerApi {
 
     private  HttpServer server ;
     private  MacManufacturerApi api;
+    private  int statusCode = 200;
+    private  String JSONResponse = "[{\"company\":\"Test Manufacturer Ltd\"}]";
 
     @BeforeEach
 
     void SetUp()throws IOException {
+        //MOCK SERVER//
        //1st Create a HttpServer For the Api to connect to on an available
 
         server = HttpServer.create( new InetSocketAddress("localhost",0),0);
@@ -33,18 +38,17 @@ public class TestManufacturerApi {
             /*** Simulate Json Response
              ***/
 
-            //create a mock Json Response with a successful response
-            String JSONResponse = "[{\"company\":\" Test Manufacturer Ltd\"}]";
+
 
             //convert JSON String into bytes
             byte[] responseBytes =
                     JSONResponse.getBytes(StandardCharsets.UTF_8);
 
-            //set the response content type Tells the client what type of data it is recieving
-            Exchange.getRequestHeaders().set("Content-Type","application/json" );
+            //set the response content type Tells the client what type of data it is receiving
+            Exchange.getResponseHeaders().set("Content-Type","application/json" );
 
-            //send the HTTP status code and specify it to the length of the resonseBytes
-            Exchange.sendResponseHeaders(200,responseBytes.length);
+            //send the HTTP status code Success and specify it to the length of the responseBytes
+            Exchange.sendResponseHeaders(statusCode,responseBytes.length);
 
             //Write the Json Response into a ResponseBody
             Exchange.getResponseBody().write(responseBytes);
@@ -69,8 +73,35 @@ public class TestManufacturerApi {
     @Test
 
     void TestSuccessfulManufacturerFoundWhenRequestSucceeds()throws Exception{
-        String result = api.lookupManufacturer("00:11:22:33:AA:BB:CC");
+        String result = api.lookupManufacturer("00:11:22:33:AA:BB");
 
         assertEquals("Test Manufacturer Ltd",result);
     }
+
+    @Test
+
+    void TestLookUpResultReturnsUnknownWhenResultIsEmpty()throws Exception{
+        statusCode = 204;
+        String result = api.lookupManufacturer("00:11:22:33:AA:BB");
+        assertEquals("Unknown manufacturer",result);
+
+    }
+
+    @Test
+    void TestServerErrorReturnsExpectedExceptionMessage()throws IOException{
+        statusCode = 500;
+        assertThrows(IOException.class,
+                ()-> api.lookupManufacturer("00:11:22:33:AA:BB"));
+    }
+
+    @Test
+    void TestInvalidJSONThrowsExceptionCatch()throws IOException,InterruptedException {
+
+        JSONResponse = "[{\"company\"}]";
+
+//
+        assertThrows(IOException.class,
+                () -> api.lookupManufacturer("00:11:22:33:AA:BB"));
+    }
+
 }

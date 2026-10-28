@@ -48,15 +48,12 @@ public class MacManufacturerApi {
 
         //Build the Http Get Request to send to the API using the urlMAC
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl + urlMac))
-                .timeout(Duration.ofSeconds(10))
-                .GET()
-                .build();
+                .uri(URI.create(apiUrl + urlMac)).timeout(Duration.ofSeconds(10))
+                .GET().build();
 
         //Send the Request and Expect a response Back that's Stored as a String to Use later
         HttpResponse<String> response = CLIENT.send(
-                request,
-                HttpResponse.BodyHandlers.ofString());
+                request, HttpResponse.BodyHandlers.ofString());
 
         //HTTP Status Codes Check
         //- 204 means that the server returned no content,which in our case would mean an Unknown Manufacturer

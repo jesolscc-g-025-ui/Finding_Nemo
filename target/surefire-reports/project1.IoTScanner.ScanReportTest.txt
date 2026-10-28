@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: project1.IoTScanner.ScanReportTest
 -------------------------------------------------------------------------------
-Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.054 s -- in project1.IoTScanner.ScanReportTest
