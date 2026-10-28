@@ -4,8 +4,8 @@ public class PortScanResult {
     private final String Host;
     private final Integer Port;
     private final String Service;
-    private String macAddress;
-    private String manufacturer;
+    private final String macAddress;
+    private final String manufacturer;
 
     public PortScanResult(String host,int port,String Service){
         this(host,port,Service,null,"Unknown manufacturer");

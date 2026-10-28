@@ -140,8 +140,7 @@ public class TestMACDiscovery {
 
     void TestShouldReturnEmptyWhenARPisEmpty()throws Exception{
 
-        CommandRunner TestRunner = command -> command.get(0).equals("ping")
-                ? "" : "";
+        CommandRunner TestRunner = command -> "";
 
         MacDiscovery discovery = new MacDiscovery(TestRunner);
         Optional<String>result = discovery.discover(Test_IP);

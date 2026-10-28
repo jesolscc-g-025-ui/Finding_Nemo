@@ -3,6 +3,7 @@ project1\IoTScanner\ScanReport.class
 project1\MacDiscovery\MacDiscovery.class
 project1\IoTScanner\DeviceReachability.class
 project1\IoTScanner\IoTScanner.class
+project1\IoTScanner\ReachabilityCheck.class
 project1\MacManufacturerLookup\MacManufacturerApi.class
 project1\MacManufacturerLookup\MacManufacturerLookUp.class
 project1\IoTScanner\PortChecker.class

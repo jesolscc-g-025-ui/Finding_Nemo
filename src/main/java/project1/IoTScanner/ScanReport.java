@@ -11,7 +11,14 @@ public class ScanReport {
         report.append("=================================\n");
         report.append("         IoT SCAN REPORT\n");
         report.append("=================================\n");
-        report.append("Device: ").append(host).append("\n\n");
+        report.append("Device: ").append(host).append("\n");
+        for (PortScanResult result: results){
+            String mac = result.getMacAddress();
+            String manufacturer = result.getManufacturer();
+            report.append("MAC: ").append(mac).append("\n");
+            report.append("MANUFACTURER: ").append(manufacturer).append("\n\n");
+        }
+
 
         report.append("OPEN PORTS: \n");
         for (PortScanResult result : results) {

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: project1.MacManufacturerLookup.TestMacManufacturerLookUp
 -------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.501 s -- in project1.MacManufacturerLookup.TestMacManufacturerLookUp
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.219 s -- in project1.MacManufacturerLookup.TestMacManufacturerLookUp

@@ -2,39 +2,52 @@ package project1.IoTScanner;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import project1.MacDiscovery.CommandRunner;
+import project1.MacDiscovery.MacDiscovery;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScanResultTest {
     private  IoTScanner scanner;
-
+    private PortChecker portChecker;
+    private MacDiscovery Macdiscovery;
+    private DeviceReachability deviceReachability;
     @BeforeEach
     void setUp() {
-        scanner = new IoTScanner();
+        scanner = new IoTScanner(portChecker,Macdiscovery,deviceReachability);
     }
     @Test
-    void TestingScanResultSuccessfulWithoutTCPConnection(){
-        PortChecker testChecker = ((host, port) -> port ==80 || port == 8008);
-        IoTScanner scanner1 = new IoTScanner(testChecker);
+    void TestingScanResultSuccessfulWithoutTCPConnection() throws Exception {
+        PortChecker testChecker =
+                (host, port) -> port == 80 || port == 8008;
 
-        List<PortScanResult>results = scanner1.scan("localhost");
+        CommandRunner fakeRunner = command -> {
+            // Return simulated command output here.
+            // It must match the format your MacDiscovery parser expects.
+            return "";
+        };
 
-        assertEquals(2,results.size());
-        boolean found = false;
-        for (PortScanResult result:results){
-            if (result.getPort() == 80){
-                found = true;
-            }
-        }assertTrue(found);
+        MacDiscovery testDiscovery = new MacDiscovery(fakeRunner);
 
-        assertTrue(results.stream().anyMatch(result -> result.getPort() == 8008));
-        assertFalse(results.stream().anyMatch(result->result.getPort() == 22));
+        IoTScanner testScanner = new IoTScanner(
+                testChecker,
+                testDiscovery,
+                ipAddress -> false
+        );
+
+        List<PortScanResult> results = testScanner.scan("localhost");
+
+        assertEquals(2, results.size());
+        assertTrue(results.stream().anyMatch(r -> r.getPort() == 80));
+        assertTrue(results.stream().anyMatch(r -> r.getPort() == 8008));
+        assertFalse(results.stream().anyMatch(r -> r.getPort() == 22));
     }
 
     @Test
-    void TestingScanResultsEmptyIfNoPortsOpen(){
+    void TestingScanResultsEmptyIfNoPortsOpen()throws  Exception{
         PortChecker testChecker = (host,port) -> false;
         IoTScanner testScanner = new IoTScanner(testChecker);
         List<PortScanResult>results = testScanner.scan("localhost");
@@ -42,7 +55,7 @@ public class ScanResultTest {
         assertTrue(results.isEmpty());
     }
     @Test
-    void TestScanResultGettersReturnCorrectValues(){
+    void TestScanResultGettersReturnCorrectValues()throws Exception{
         PortChecker testChecker = ((host, port) -> port == 22 || port ==443);
         IoTScanner testScanner = new IoTScanner(testChecker);
         List<PortScanResult>results = testScanner.scan("localhost");

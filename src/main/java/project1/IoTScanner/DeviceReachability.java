@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
-public class DeviceReachability {
+public class DeviceReachability implements ReachabilityCheck{
 
     private final CommandRunner commandRunner;
 
@@ -18,9 +18,9 @@ public class DeviceReachability {
     public DeviceReachability(){
         this(IoTScanner::RunSystemCommand);
     }
+    @Override
 
-    public boolean isReachAble(String IpAddress)throws
-            Exception {
+    public boolean isReachAble(String IpAddress) throws Exception {
         String Command = commandRunner.run(List.of("ping", "-n", "1", "-w", "1000"));
         Process process = new ProcessBuilder(Command, IpAddress).redirectErrorStream(true).start();
 
