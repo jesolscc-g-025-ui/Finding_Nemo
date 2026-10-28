@@ -14,6 +14,7 @@ public class DeviceReachability {
     public DeviceReachability(CommandRunner commandRunner){
         this.commandRunner = commandRunner;
     }
+    //Run System Command from the Actual System
     public DeviceReachability(){
         this(IoTScanner::RunSystemCommand);
     }

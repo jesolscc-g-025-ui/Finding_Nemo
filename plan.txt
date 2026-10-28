@@ -31,7 +31,7 @@ This implementation is Windows-specific; Linux uses different command options.
 
 If a MAC address cannot be discovered, don't label the manufacturer as confirmed. Report it as unavailable instead.
 
-Test your parsing and manufacturer lookup separately from the real network discovery, so your unit tests don't depend on a live device.
+Test parsing and manufacturer lookup separately from the real network discovery, so your unit tests don't depend on a live device.
 
 For offline Devices The Scanner Uses The CSV database to search for the MAC address.
 Online Devices Uses the API to search for the MACAddress. API returns a JSON response which gets deserielized into a String object

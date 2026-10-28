@@ -17,9 +17,20 @@ public class MacManufacturerApi {
 
     //Create A HttpClient to connect to the remote server of the API
 
-    private final HttpClient client = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+    private final HttpClient CLIENT;
+   //Attributes to allow local Server Initialisation to Simulate Server-Client Connection/Responses&Requests Of API
+    private final String apiUrl;
+
+
+    public MacManufacturerApi(String apiUrl){
+        this.apiUrl = apiUrl.endsWith("/") ?apiUrl : apiUrl + "/";
+        this.CLIENT = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+    }
+
+    public MacManufacturerApi(){
+        this(API_URL);
+    }
+
 
 
     public String lookupManufacturer(String macAddress)
@@ -37,13 +48,13 @@ public class MacManufacturerApi {
 
         //Build the Http Get Request to send to the API using the urlMAC
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL + urlMac))
+                .uri(URI.create(apiUrl + urlMac))
                 .timeout(Duration.ofSeconds(10))
                 .GET()
                 .build();
 
         //Send the Request and Expect a response Back that's Stored as a String to Use later
-        HttpResponse<String> response = client.send(
+        HttpResponse<String> response = CLIENT.send(
                 request,
                 HttpResponse.BodyHandlers.ofString());
 
