@@ -6,11 +6,14 @@ import project1.MacManufacturerLookup.ApiManufacturerLookUp;
 import project1.MacManufacturerLookup.LocalManufacturerLookUp;
 import project1.MacManufacturerLookup.MacManufacturerApi;
 import project1.MacManufacturerLookup.MacManufacturerLookUp;
+import project1.SecurityReport.ReportWriter;
+import project1.SecurityReport.ScanReport;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 
 public class IoTScanner {
@@ -71,10 +74,15 @@ public class IoTScanner {
             //              v        v       v
             IoTScanner scanner = new IoTScanner();
             List<PortScanResult> results = scanner.scan(ipAddress);
+            String macAddress = results.getFirst().getMacAddress();
+            String manufacturer = results.getFirst().getManufacturer();
+            int ScannedPorts = ports.size();
 
-            ScanReport report = new ScanReport();
-            String FullReport = report.generateReport(ipAddress, results);
-            System.out.println(FullReport);
+            ScanReport report = new ScanReport(ipAddress,macAddress,manufacturer,ScannedPorts,results);
+
+            ReportWriter writer = new ReportWriter();
+
+            writer.WriteReport(report, Path.of("Reports","Scan-Report of " + ipAddress));
 
         } catch (IOException e) {
             System.err.println("I/O Error " + e.getMessage());

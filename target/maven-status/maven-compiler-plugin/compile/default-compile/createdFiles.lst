@@ -1,9 +1,12 @@
 project1\IoTScanner\PortScanResult.class
+project1\SecurityReport\ScanReport$ScanSummary.class
 project1\MacDiscovery\MacDiscovery.class
 project1\IoTScanner\DeviceReachability.class
 project1\IoTScanner\ReachabilityCheck.class
 project1\MacManufacturerLookup\MacManufacturerApi.class
-project1\IoTScanner\ScanReport.class
+project1\SecurityReport\ScanReport$DeviceInfo.class
+project1\SecurityReport\ReportWriter.class
+project1\SecurityReport\ScanReport.class
 project1\MacManufacturerLookup\LocalManufacturerLookUp.class
 project1\IoTScanner\IoTScanner.class
 project1\MacManufacturerLookup\ApiManufacturerLookUp.class
