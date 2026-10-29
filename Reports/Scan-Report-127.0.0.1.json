@@ -1,0 +1,15 @@
+{
+  "device": {
+    "ipAddress": "127.0.0.1",
+    "macAddress": "Unknown",
+    "manufacturer": "Unknown manufacturer"
+  },
+  "target": "127.0.0.1",
+  "scanDate": "2026-10-29T19:27:00.067381900",
+  "summary": {
+    "totalPortsChecked": 14,
+    "openPorts": 0,
+    "ScanStatus": "Completed"
+  },
+  "ports": []
+}

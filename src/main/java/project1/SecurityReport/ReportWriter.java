@@ -11,7 +11,7 @@ public class ReportWriter {
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public void WriteReport(ScanReport report , Path filepath)throws IOException {
+    public void writeReport(ScanReport report , Path filepath)throws IOException {
 
         //check path if path doesnt exist create a directory
 

@@ -60,42 +60,6 @@ public class IoTScanner {
         addPorts();
     }
 
-    public static void main(String[] args) {
-        if (args.length != 1){
-            System.out.println("Example: IotScanner <Device-ip>");
-        return;
-        }
-        String ipAddress = args[0];
-
-        try {
-            // First Discover the Mac Address of IpAddress
-            //Create a portChecker that Attempts an actual Network Connections
-            //              |        |       |
-            //              v        v       v
-            IoTScanner scanner = new IoTScanner();
-            List<PortScanResult> results = scanner.scan(ipAddress);
-            String macAddress = results.getFirst().getMacAddress();
-            String manufacturer = results.getFirst().getManufacturer();
-            int ScannedPorts = ports.size();
-
-            ScanReport report = new ScanReport(ipAddress,macAddress,manufacturer,ScannedPorts,results);
-
-            ReportWriter writer = new ReportWriter();
-
-            writer.WriteReport(report, Path.of("Reports","Scan-Report of " + ipAddress));
-
-        } catch (IOException e) {
-            System.err.println("I/O Error " + e.getMessage());
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.err.println("MAC Discovery Was Interrupted");
-
-        } catch (Exception e) {
-            throw new RuntimeException("unsupported Command From Mac Discovery");
-        }
-    }
-
 
     public void addPorts() {
         // general TCP ports you would commonly find on IoT devices
@@ -122,8 +86,13 @@ public class IoTScanner {
         ports.put(502,"TCP - Industrial Automation,PLCs,and smart Sensors");
         ports.put(20000,"TCP - DNP3(Distributed Network Protocol)");
     }
+
     public Map<Integer,String> availablePorts(){
         return Collections.unmodifiableMap(ports);
+    }
+
+    public int getScannedPorts(){
+        return ports.size();
     }
 
     public List<PortScanResult>scan(String host)throws Exception{

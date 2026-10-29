@@ -29,7 +29,7 @@ public class ScanReportTest {
 
         List<PortScanResult>results = of();
 
-        ScanReport report = new ScanReport(target,macAddress,manufacturer, ports.size(), results);
+        ScanReport report = new ScanReport(target,macAddress,manufacturer, ports.size(),results);
 
         assertNotNull(report);
     }
@@ -56,6 +56,6 @@ public class ScanReportTest {
 
         assertEquals("3",root.getAsJsonObject("summary").get("totalPortsChecked").getAsString());
         assertEquals(0,root.getAsJsonObject("summary").get("openPorts").getAsInt());
-        
+
     }
 }
