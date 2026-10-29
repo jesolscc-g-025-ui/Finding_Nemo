@@ -511,3 +511,9 @@ However, MAC discovery uses external network utilities whose names, arguments, a
 Summary
 -------
 These design choices aim to produce a scanner that is modular, testable, maintainable, and resilient to common failures. Separating responsibilities, injecting dependencies, providing a local manufacturer fallback, and automating builds and tests also makes it easier to extend the project with additional scanning and reporting features.
+
+-------------------|
+#VERIFICATION CODE |
+-------------------|
+WTC-F7YDP5XL       |
+--------------------
