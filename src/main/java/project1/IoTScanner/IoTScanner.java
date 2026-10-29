@@ -2,6 +2,8 @@ package project1.IoTScanner;
 
 import project1.MacDiscovery.CommandRunner;
 import project1.MacDiscovery.MacDiscovery;
+import project1.MacManufacturerLookup.ApiManufacturerLookUp;
+import project1.MacManufacturerLookup.LocalManufacturerLookUp;
 import project1.MacManufacturerLookup.MacManufacturerApi;
 import project1.MacManufacturerLookup.MacManufacturerLookUp;
 
@@ -18,21 +20,39 @@ public class IoTScanner {
     private final PortChecker portChecker;
     private final MacDiscovery macDiscovery;
     private final ReachabilityCheck reachabilityCheck;
+    private final LocalManufacturerLookUp localLookup;
+    private final ApiManufacturerLookUp apiLookup;
 
-    //Constructor for actual tcpConnection
+    //Constructor for actual tcpConnection,uses real ping.
     public IoTScanner(){
-        this(IoTScanner::checkTcpConnection,new MacDiscovery(),new DeviceReachability()::isReachAble);
-        addPorts();
+        this(IoTScanner::checkTcpConnection,new MacDiscovery()
+                ,new DeviceReachability()::isReachAble,
+                new MacManufacturerApi(),new MacManufacturerLookUp());
+
     }
     //Constructor for Testing Port Openings
     public IoTScanner(PortChecker portChecker){
-        this(portChecker,new MacDiscovery(),new DeviceReachability()::isReachAble);
-        addPorts();
+        this(portChecker,new MacDiscovery(),new DeviceReachability()::isReachAble,
+                new MacManufacturerApi(),new MacManufacturerLookUp());
+
     }
+    //Constructor for testing injection with discovery and reachability
     public IoTScanner(PortChecker portChecker,MacDiscovery macDiscovery,ReachabilityCheck reachabilityCheck){
+        this(portChecker,macDiscovery,reachabilityCheck,new MacManufacturerApi(),new MacManufacturerLookUp());
+
+    }
+    //Constructor for testing Manufacturer lookup and fallback
+    public IoTScanner(PortChecker portChecker,
+                      MacDiscovery macDiscovery,
+                      ReachabilityCheck reachabilityCheck,
+                      ApiManufacturerLookUp apiLookup,
+                      LocalManufacturerLookUp localLookup){
+
         this.portChecker = portChecker;
         this.macDiscovery = macDiscovery;
         this.reachabilityCheck = reachabilityCheck;
+        this.apiLookup = apiLookup;
+        this.localLookup = localLookup;
 
         addPorts();
     }
@@ -46,28 +66,14 @@ public class IoTScanner {
 
         try {
             // First Discover the Mac Address of IpAddress
-            MacDiscovery discovery = new MacDiscovery();
-            Optional<String>mac = discovery.discover(ipAddress);
-            String macAddress = mac.get();
-
-            //Secondly Check if the device is online and try to use the API lookup
-            String manufacturer = IoTScanner.findManufacturer(ipAddress,macAddress);
-
-            //Device Information
-            System.out.println("======== Device Info =====\n");
-            System.out.println("IP: " + ipAddress+"\n");
-            System.out.println("MAC: "+ mac.orElse("mac not found")+"\n");
-            System.out.println("Manufacturer: " + manufacturer);
-            System.out.println("--------------------------------");
-
             //Create a portChecker that Attempts an actual Network Connections
             //              |        |       |
             //              v        v       v
             IoTScanner scanner = new IoTScanner();
-            List<PortScanResult> results = scanner.scan(args[0]);
+            List<PortScanResult> results = scanner.scan(ipAddress);
 
             ScanReport report = new ScanReport();
-            String FullReport = report.generateReport(args[0], results);
+            String FullReport = report.generateReport(ipAddress, results);
             System.out.println(FullReport);
 
         } catch (IOException e) {
@@ -116,25 +122,33 @@ public class IoTScanner {
 
         List<PortScanResult>results = new ArrayList<>();
 
-        MacDiscovery discovery = new MacDiscovery();
-        Optional<String>macResult = discovery.discover(host);
-
-        String MacAddress = macResult.orElse("Unknown");
-        String manufacturer = macResult.isPresent() ? findManufacturer(host,MacAddress): "Unknown manufacturer";
-
-        for (Map.Entry<Integer,String>enter: availablePorts().entrySet()){
+        for (Map.Entry<Integer,String>enter: availablePorts().entrySet()) {
 
             int port = enter.getKey();
             String service = enter.getValue();
 
-            if (isPortOpen(host,port)){
-                PortScanResult ScanResult = new PortScanResult(host,port,service,MacAddress,manufacturer);
+            if (isPortOpen(host, port)) {
+                PortScanResult ScanResult = new PortScanResult(host, port, service, "Unknown", "Unknown manufacturer");
                 results.add(ScanResult);
-                System.out.println(ScanResult);
             }
-            }
+        }
+        if (results.isEmpty()){
+            return results;
+        }
 
-        return results;
+        Optional<String>MacResult = macDiscovery.discover(host);
+        String macAddress = MacResult.orElse("Unknown");
+        String manufacturer =  "Unknown manufacturer";
+
+        if (MacResult.isPresent()){
+            manufacturer = findManufacturer(host,macAddress);
+        }
+        List<PortScanResult>UpdatedResult = new ArrayList<>();
+
+        for (PortScanResult result : results){
+            UpdatedResult.add(new PortScanResult(result.getHost(),result.getPort(),result.getService(),macAddress,manufacturer));
+        }
+        return UpdatedResult;
     }
     private static boolean checkTcpConnection(String host,int port){
         try(Socket socket = new Socket()){
@@ -147,16 +161,14 @@ public boolean isPortOpen(String host,int port){
         return portChecker.isOpen(host, port);
 }
 
-private static String findManufacturer(String Ip_Address,String macAddress)throws Exception{
+private  String findManufacturer(String Ip_Address,String macAddress)throws Exception{
 
-        MacManufacturerApi api = new MacManufacturerApi();
-        MacManufacturerLookUp lookup = new MacManufacturerLookUp();
 
-        boolean isReachable = new DeviceReachability().isReachAble(Ip_Address);
+        boolean isReachable = reachabilityCheck.isReachAble(Ip_Address);
 
     if (isReachable) {
             try {
-                String manufacturer = api.lookupManufacturer(macAddress);
+                String manufacturer = apiLookup.lookupManufacturer(macAddress);
 
                 if (manufacturer != null && !manufacturer.isEmpty() && !manufacturer.equalsIgnoreCase("unknown Manufacturer")) {
                     return manufacturer;
@@ -166,7 +178,7 @@ private static String findManufacturer(String Ip_Address,String macAddress)throw
 
             }
         }
-        return lookup.lookupManufacturer(macAddress);
+        return localLookup.lookupManufacturer(macAddress);
 }
     public static String RunSystemCommand(List<String>command)throws IOException,InterruptedException{
         Process process = new ProcessBuilder(command).redirectErrorStream(true).start();

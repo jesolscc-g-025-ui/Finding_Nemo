@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class MacManufacturerLookUp {
+public class MacManufacturerLookUp implements LocalManufacturerLookUp{
 
     private final HashMap<String,String> manufacturers = new HashMap<>();
 

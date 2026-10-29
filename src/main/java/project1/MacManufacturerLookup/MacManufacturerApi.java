@@ -11,7 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public class MacManufacturerApi {
+public class MacManufacturerApi implements ApiManufacturerLookUp {
 
     private static final String API_URL =  "https://api.macaddresslookup.app/api/v2/"; // BaseAddress of the API
 
