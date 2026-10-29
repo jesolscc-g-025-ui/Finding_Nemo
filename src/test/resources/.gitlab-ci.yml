@@ -1,0 +1,54 @@
+# Java IoT Security Scanner - GitLab CI/CD
+image: maven:3.9-eclipse-temurin-21
+
+stages:
+  - compile
+  - test
+  - package
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --no-transfer-progress"
+
+cache:
+  key: maven-dependencies
+  paths:
+    - .m2/repository/
+
+# Stage 1: Compile the application
+
+compile:
+  stage: compile
+  script:
+    - echo "Compiling IoTScanner..."
+    - mvn $MAVEN_CLI_OPTS clean compile
+
+# Stage 2: Run tests before packaging
+test:
+  stage: test
+  script:
+    - echo "Running IoTScanner tests..."
+    - mvn $MAVEN_CLI_OPTS clean test
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+    paths:
+      - target/surefire-reports/
+
+
+# Stage 2: Package the application only after tests pass
+package:
+  stage: package
+  script:
+    - echo "Packaging IoTScanner..."
+    - mvn $MAVEN_CLI_OPTS package -DskipTests
+    - echo "Copying runtime dependencies..."
+    - mvn $MAVEN_CLI_OPTS dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=target/dependency
+  artifacts:
+    name: "iot-scanner-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - target/*.jar
+      - target/dependency/
+
